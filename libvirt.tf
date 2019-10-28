@@ -26,7 +26,8 @@ resource "libvirt_pool" "pool_ubuntu" {
 resource "libvirt_volume" "volume_ubuntu" {
   name   = "volume_ubuntu"
   pool   = libvirt_pool.pool_ubuntu.name
-  source = "https://cloud-images.ubuntu.com/releases/xenial/release/ubuntu-16.04-server-cloudimg-amd64-disk1.img"
+  #source = "https://cloud-images.ubuntu.com/releases/xenial/release/ubuntu-16.04-server-cloudimg-amd64-disk1.img"
+  source = "https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img"
   format = "qcow2"
 }
 
