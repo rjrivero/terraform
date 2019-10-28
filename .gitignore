@@ -1,4 +1,5 @@
 # Terraform artifacts
 .terraform
 *.tfstate
+*.tfstate.lock.info
 *.tfstate.backup
