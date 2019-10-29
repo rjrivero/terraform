@@ -1,0 +1,16 @@
+[controllers]
+
+controller0 index=0 ansible_host=10.240.0.10
+controller1 index=1 ansible_host=10.240.0.11
+controller2 index=2 ansible_host=10.240.0.12
+
+[workers]
+
+worker0 index=0 ansible_host=10.240.0.20
+worker1 index=1 ansible_host=10.240.0.21
+worker2 index=2 ansible_host=10.240.0.22
+
+[all:vars]
+
+ansible_user=terraform
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'

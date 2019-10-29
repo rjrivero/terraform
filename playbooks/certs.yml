@@ -1,0 +1,29 @@
+---
+# ----------------------------------------------------------------------
+# Generate the certificates with "certificates.sh" script in "ca" folder
+# ----------------------------------------------------------------------
+
+- hosts: workers
+  tasks:
+    - name: Copy certs
+      copy:
+        src: ca/{{item}}
+        dest: /home/terraform/{{item}}
+      with_items:
+        - ca.pem
+        - worker{{index}}-key.pem
+        - worker{{index}}.pem
+
+- hosts: controllers
+  tasks:
+    - name: Copy certs
+      copy:
+        src: ca/{{item}}
+        dest: /home/terraform/{{item}}
+      with_items:
+        - ca.pem
+        - ca-key.pem
+        - service-account.pem
+        - service-account-key.pem
+        - kubernetes.pem
+        - kubernetes-key.pem
