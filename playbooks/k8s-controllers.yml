@@ -1,4 +1,8 @@
 ---
+
+# Al terminar, HAY QUE CREAR LOS ROLES A MANO:
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/08-bootstrapping-kubernetes-controllers.md
+
 - hosts: controllers
   vars:
     k8s_version: v1.16.0

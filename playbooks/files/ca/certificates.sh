@@ -196,7 +196,7 @@ cfssl gencert \
 # API Server certificates
 # -----------------------
 
-KUBERNETES_PUBLIC_ADDRESS=10.224.0.2
+KUBERNETES_PUBLIC_ADDRESS=10.240.0.2
 KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local
 
 cat > kubernetes-csr.json <<EOF
