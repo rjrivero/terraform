@@ -1,0 +1,51 @@
+---
+- hosts: controllers
+  vars:
+    etcd_version: v3.4.0
+    home: /home/terraform
+  tasks:
+    - name: Unarchive etcd
+      unarchive:
+        src: https://github.com/etcd-io/etcd/releases/download/{{etcd_version}}/etcd-{{etcd_version}}-linux-amd64.tar.gz
+        dest: "{{home}}"
+        creates: "{{home}}/etcd-{{etcd_version}}-linux-amd64"
+        remote_src: yes
+    - name: Install etcd
+      become: true
+      copy:
+        remote_src: true
+        src: "{{home}}/etcd-{{etcd_version}}-linux-amd64/{{item}}"
+        dest: /usr/local/bin/{{item}}
+        mode: 0755
+      with_items:
+        - etcd
+        - etcdctl
+    - name: Create etcd config dirs
+      become: true
+      file:
+        state: directory
+        path: "{{item}}"
+      with_items:
+        - /etc/etcd
+        - /var/lib/etcd
+    - name: Copy certs to etcd config
+      become: true
+      copy:
+        src: ca/{{item}}
+        dest: /etc/etcd/{{item}}
+      with_items:
+        - ca.pem
+        - kubernetes-key.pem
+        - kubernetes.pem
+    - name: Copy etcd service description
+      become: true
+      template:
+        src: etcd.service
+        dest: /etc/systemd/system/etcd.service
+    - name: Enable and start etcd service
+      become: true
+      systemd:
+        daemon_reload: true
+        name: etcd
+        state: started
+        enabled: true

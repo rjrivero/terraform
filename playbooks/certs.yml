@@ -5,7 +5,7 @@
 
 - hosts: workers
   tasks:
-    - name: Copy certs
+    - name: Copy certs and kubeconfigs
       copy:
         src: ca/{{item}}
         dest: /home/terraform/{{item}}
@@ -13,10 +13,12 @@
         - ca.pem
         - worker{{index}}-key.pem
         - worker{{index}}.pem
+        - worker{{index}}.kubeconfig
+        - kube-proxy.kubeconfig
 
 - hosts: controllers
   tasks:
-    - name: Copy certs
+    - name: Copy certs and kubeconfigs
       copy:
         src: ca/{{item}}
         dest: /home/terraform/{{item}}
@@ -27,3 +29,7 @@
         - service-account-key.pem
         - kubernetes.pem
         - kubernetes-key.pem
+        - admin.kubeconfig
+        - kube-controller-manager.kubeconfig
+        - kube-scheduler.kubeconfig
+        - encryption-config.yaml
