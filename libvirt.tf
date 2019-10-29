@@ -47,6 +47,13 @@ resource "libvirt_volume" "volume_worker" {
   size = "214748364800"
 }
 
+resource "libvirt_volume" "volume_lb" {
+  name = "volume_lb"
+  base_volume_id = libvirt_volume.volume_ubuntu.id
+  base_volume_pool = libvirt_pool.pool_ubuntu.name
+  size = "21474836480"
+}
+
 # Set default password
 data "template_file" "user_data" {
   template = file("${path.module}/cloud_init.cfg")
@@ -80,7 +87,7 @@ resource "libvirt_domain" "domain_controller" {
   network_interface {
     network_id = libvirt_network.network_kube.id
     addresses = ["10.240.0.1${count.index}"]
-    wait_for_lease = true 
+    wait_for_lease = true
   }
 
   # IMPORTANT: this is a known bug on cloud images, since they expect a console
@@ -121,7 +128,7 @@ resource "libvirt_domain" "domain_worker" {
   network_interface {
     network_id = libvirt_network.network_kube.id
     addresses = ["10.240.0.2${count.index}"]
-    wait_for_lease = true 
+    wait_for_lease = true
   }
 
   # IMPORTANT: this is a known bug on cloud images, since they expect a console
@@ -141,6 +148,46 @@ resource "libvirt_domain" "domain_worker" {
 
   disk {
     volume_id = libvirt_volume.volume_worker[count.index].id
+  }
+
+  graphics {
+    type        = "spice"
+    listen_type = "address"
+    autoport    = true
+  }
+}
+
+# Create the machine
+resource "libvirt_domain" "domain_lb" {
+  name = "domain_lb"
+  memory = "512"
+  vcpu = 1
+
+  cloudinit = libvirt_cloudinit_disk.commoninit.id
+
+  network_interface {
+    network_id = libvirt_network.network_kube.id
+    addresses = ["10.240.0.2"]
+    wait_for_lease = true
+  }
+
+  # IMPORTANT: this is a known bug on cloud images, since they expect a console
+  # we need to pass it
+  # https://bugs.launchpad.net/cloud-images/+bug/1573095
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
+  }
+
+  console {
+    type        = "pty"
+    target_type = "virtio"
+    target_port = "1"
+  }
+
+  disk {
+    volume_id = libvirt_volume.volume_lb.id
   }
 
   graphics {

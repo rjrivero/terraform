@@ -10,6 +10,10 @@ worker0 index=0 ansible_host=10.240.0.20
 worker1 index=1 ansible_host=10.240.0.21
 worker2 index=2 ansible_host=10.240.0.22
 
+[lb]
+
+lb0 ansible_host=10.240.0.2
+
 [all:vars]
 
 ansible_user=terraform
