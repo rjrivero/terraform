@@ -15,5 +15,5 @@ clusterDNS:
 podCIDR: "10.240.{{index}}.0/24"
 resolvConf: "/run/systemd/resolve/resolv.conf"
 runtimeRequestTimeout: "15m"
-tlsCertFile: "/var/lib/kubelet/worker{{index}}.pem"
-tlsPrivateKeyFile: "/var/lib/kubelet/worker{{index}}-key.pem"
+tlsCertFile: "/var/lib/kubelet/worker-{{index}}.pem"
+tlsPrivateKeyFile: "/var/lib/kubelet/worker-{{index}}-key.pem"

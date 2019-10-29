@@ -122,11 +122,11 @@
         src: "{{item.src}}"
         dest: "{{item.dest}}"
       with_items:
-        - src: ca/worker{{index}}-key.pem
-          dest: /var/lib/kubelet/worker{{index}}-key.pem
-        - src: ca/worker{{index}}.pem
-          dest: /var/lib/kubelet/worker{{index}}-key.pem
-        - src: ca/worker{{index}}.kubeconfig
+        - src: ca/worker-{{index}}-key.pem
+          dest: /var/lib/kubelet/worker-{{index}}-key.pem
+        - src: ca/worker-{{index}}.pem
+          dest: /var/lib/kubelet/worker-{{index}}.pem
+        - src: ca/worker-{{index}}.kubeconfig
           dest: /var/lib/kubelet/kubeconfig
         - src: ca/ca.pem
           dest: /var/lib/kubernetes/ca.pem

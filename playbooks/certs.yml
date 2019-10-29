@@ -11,10 +11,19 @@
         dest: /home/terraform/{{item}}
       with_items:
         - ca.pem
-        - worker{{index}}-key.pem
-        - worker{{index}}.pem
-        - worker{{index}}.kubeconfig
+        - worker-{{index}}-key.pem
+        - worker-{{index}}.pem
+        - worker-{{index}}.kubeconfig
         - kube-proxy.kubeconfig
+    - name: Set hostname
+      become: true
+      hostname:
+        name: worker-{{index}}
+    - name: Add hostname to /etc/hosts
+      become: true
+      lineinfile:
+        path: /etc/hosts
+        line: 10.240.0.2{{index}} worker-{{index}}
 
 - hosts: controllers
   tasks:
@@ -33,3 +42,12 @@
         - kube-controller-manager.kubeconfig
         - kube-scheduler.kubeconfig
         - encryption-config.yaml
+    - name: Set hostname
+      become: true
+      hostname:
+        name: controller-{{index}}
+    - name: Add hostname to /etc/hosts
+      become: true
+      lineinfile:
+        path: /etc/hosts
+        line: 10.240.0.1{{index}} controller-{{index}}

@@ -76,9 +76,9 @@ resource "libvirt_cloudinit_disk" "commoninit" {
 }
 
 # Create the machine
-resource "libvirt_domain" "domain_controller" {
+resource "libvirt_domain" "controller" {
   count = 3
-  name = "domain_controller${count.index}"
+  name = "controller-${count.index}"
   memory = "2048"
   vcpu = 2
 
@@ -117,9 +117,9 @@ resource "libvirt_domain" "domain_controller" {
 }
 
 # Create the machine
-resource "libvirt_domain" "domain_worker" {
+resource "libvirt_domain" "worker" {
   count = 3
-  name = "domain_worker${count.index}"
+  name = "worker-${count.index}"
   memory = "2048"
   vcpu = 2
 
@@ -158,8 +158,8 @@ resource "libvirt_domain" "domain_worker" {
 }
 
 # Create the machine
-resource "libvirt_domain" "domain_lb" {
-  name = "domain_lb"
+resource "libvirt_domain" "lb" {
+  name = "lb-0"
   memory = "512"
   vcpu = 1
 

@@ -76,9 +76,9 @@ cfssl gencert \
 # --------------------
 
 for instance in 0 1 2; do
-cat > worker${instance}-csr.json <<EOF
+cat > worker-${instance}-csr.json <<EOF
 {
-  "CN": "system:node:domain_worker${instance}",
+  "CN": "system:node:worker-${instance}",
   "key": {
     "algo": "rsa",
     "size": 2048
@@ -101,9 +101,9 @@ cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
-  -hostname=domain_worker${instance},${INTERNAL_IP} \
+  -hostname=worker-${instance},${INTERNAL_IP} \
   -profile=kubernetes \
-  worker${instance}-csr.json | cfssljson -bare worker${instance}
+  worker-${instance}-csr.json | cfssljson -bare worker-${instance}
 done
 
 # Controller manager certificates

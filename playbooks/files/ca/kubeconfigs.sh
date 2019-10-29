@@ -9,20 +9,20 @@ for instance in 0 1 2; do
     --certificate-authority=ca.pem \
     --embed-certs=true \
     --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \
-    --kubeconfig=worker${instance}.kubeconfig
+    --kubeconfig=worker-${instance}.kubeconfig
 
-  kubectl config set-credentials system:node:domain_worker${instance} \
-    --client-certificate=worker${instance}.pem \
-    --client-key=worker${instance}-key.pem \
+  kubectl config set-credentials system:node:worker-${instance} \
+    --client-certificate=worker-${instance}.pem \
+    --client-key=worker-${instance}-key.pem \
     --embed-certs=true \
-    --kubeconfig=worker${instance}.kubeconfig
+    --kubeconfig=worker-${instance}.kubeconfig
 
   kubectl config set-context default \
     --cluster=kubernetes \
-    --user=system:node:domain_worker${instance} \
-    --kubeconfig=worker${instance}.kubeconfig
+    --user=system:node:worker-${instance} \
+    --kubeconfig=worker-${instance}.kubeconfig
 
-  kubectl config use-context default --kubeconfig=worker${instance}.kubeconfig
+  kubectl config use-context default --kubeconfig=worker-${instance}.kubeconfig
 done
 
 # Kube-proxy kubernetes config file
