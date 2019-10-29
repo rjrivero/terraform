@@ -1,0 +1,94 @@
+---
+- hosts: controllers
+  vars:
+    k8s_version: v1.16.0
+    home: /home/terraform
+  tasks:
+    - name: Unarchive k8s server executables
+      unarchive:
+        src: https://dl.k8s.io/{{k8s_version}}/kubernetes-server-linux-amd64.tar.gz
+        dest: "{{home}}"
+        creates: "{{home}}/kubernetes"
+        remote_src: true
+    - name: Install executables
+      become: true
+      copy:
+        remote_src: true
+        src: "{{home}}/kubernetes/server/bin/{{item}}"
+        dest: /usr/local/bin/{{item}}
+        mode: 0755
+      with_items:
+        - kube-apiserver
+        - kube-controller-manager
+        - kube-scheduler
+        - kubectl
+    - name: Create kubernetes path
+      become: true
+      file:
+        path: "{{item}}"
+        state: directory
+      with_items:
+        - /var/lib/kubernetes
+        - /etc/kubernetes
+        - /etc/kubernetes/config
+    - name: Copy keys, certs and configs
+      become: true
+      copy:
+        src: ca/{{item}}
+        dest: /var/lib/kubernetes/{{item}}
+      with_items:
+        - ca.pem
+        - ca-key.pem
+        - kubernetes-key.pem
+        - kubernetes.pem
+        - service-account-key.pem
+        - service-account.pem
+        - encryption-config.yaml
+        - kube-controller-manager.kubeconfig
+        - kube-scheduler.kubeconfig
+    - name: Copy kube-scheduler.yaml
+      become: true
+      copy:
+        src: kube-scheduler.yaml
+        dest: /etc/kubernetes/config/kube-scheduler.yaml
+    - name: Copy services
+      become: true
+      template:
+        src: "{{item}}"
+        dest: /etc/systemd/system/{{item}}
+      with_items:
+        - kube-apiserver.service
+        - kube-controller-manager.service
+        - kube-scheduler.service
+    - name: Install nginx
+      become: true
+      package:
+        name: nginx
+        state: present
+    - name: Nginx proxy for healthz status
+      become: true
+      copy:
+        src: kubernetes.default.svc.cluster.local
+        dest: /etc/nginx/sites-enabled/kubernetes.default.svc.cluster.local
+    - name: Nginx support for long domain names
+      become: true
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        line: server_names_hash_bucket_size 64;
+        insertafter: http {
+    - name: Start services
+      become: true
+      systemd:
+        daemon_reload: true
+        name: "{{item}}"
+        state: started
+        enabled: true
+      with_items:
+        - kube-apiserver
+        - kube-controller-manager
+        - kube-scheduler
+    - name: Restart nginx
+      become: true
+      systemd:
+        name: nginx
+        state: restarted
